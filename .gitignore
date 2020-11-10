@@ -143,7 +143,6 @@ dmypy.json
 .prof
 
 ### VisualStudioCode ###
-.vscode/
 *.code-workspace
 
 ### VisualStudioCode Patch ###
