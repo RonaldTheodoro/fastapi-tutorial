@@ -13,4 +13,4 @@ pytest = "*"
 python_version = "3.8"
 
 [scripts]
-server = "uvicorn app:app --reload"
+server = "python app.py"

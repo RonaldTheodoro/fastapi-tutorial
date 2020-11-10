@@ -1,12 +1,14 @@
 import enum
 
 import fastapi
+import uvicorn
 
 
 class ModelName(str, enum.Enum):
     alexnet = 'alexnet'
     resnet = 'resnet'
     letnet = 'letnet'
+
 
 app = fastapi.FastAPI()
 
@@ -45,3 +47,7 @@ async def get_model(model_name: ModelName):
 @app.get('/files/{file_path:path}')
 async def read_file(file_path: str):
     return {'file_path': file_path}
+
+
+if __name__ == '__main__':
+    uvicorn.run('app:app', reload=True, debug=True)
