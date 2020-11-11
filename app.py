@@ -3,12 +3,20 @@ import typing
 
 import fastapi
 import uvicorn
+import pydantic
 
 
 class ModelName(str, enum.Enum):
     alexnet = 'alexnet'
     resnet = 'resnet'
     letnet = 'letnet'
+
+
+class Item(pydantic.BaseModel):
+    name: str
+    description: typing.Optional[str] = None
+    price: float
+    tax: typing.Optional[float] = None
 
 
 app = fastapi.FastAPI()
@@ -81,6 +89,7 @@ async def read_item_query(
         )
     return item
 
+
 @app.get('/items_user/{item_id}')
 async def read_user_item(
     item_id: str,
@@ -89,6 +98,24 @@ async def read_user_item(
     limit: typing.Optional[int] = None
 ):
     return {'item_id': item_id, 'needy': needy, 'skip': skip, 'limit': limit}
+
+
+@app.post('/items/')
+async def create_item(item: Item):
+    item_dict = item.dict()
+
+    if item.tax:
+        price_with_tax = item.price + item.tax
+        item_dict.update({'price_with_tax': price_with_tax})
+    return item_dict
+
+
+@app.put('/items/{item_id}')
+async def update_item(item_id: int, item: Item, q: typing.Optional[str] = None):
+    result = {'item_id': item_id, **item.dict()}
+    if q:
+        result.update({'q': q})
+    return result
 
 
 if __name__ == '__main__':
