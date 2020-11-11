@@ -28,6 +28,7 @@ fake_items_db = [
     {'item_name': 'Baz'},
 ]
 
+
 @app.get('/')
 async def root():
     return {'message': 'Hello World'}
@@ -66,7 +67,7 @@ async def read_file(file_path: str):
 
 @app.get('/items/')
 async def read_item(skip: int = 0, limit: int = 10):
-    return fake_items_db[skip : skip + limit]
+    return fake_items_db[skip: skip + limit]
 
 
 @app.get('/users/{user_id}/items/{item_id}')
@@ -116,6 +117,46 @@ async def update_item(item_id: int, item: Item, q: typing.Optional[str] = None):
     if q:
         result.update({'q': q})
     return result
+
+
+@app.get('/read_items/')
+async def read_items(
+    q: typing.Optional[str] = fastapi.Query(None, min_length=3, max_length=10)
+):
+    results = {'items': [{'item_id': 'Foo'}, {'item_id': 'Bar'}]}
+    if q:
+        results.update({'q': q})
+    return results
+
+
+@app.get('/cnpj/')
+async def read_items(
+    cnpj: str = fastapi.Query(..., regex='^\d{2}\.\d{3}\.\d{3}/\d{4}\-\d{2}$')
+):
+    return {'cnpj': cnpj}
+
+
+@app.get('/cnpjs/')
+async def cnpjs(c: typing.Optional[typing.List[str]] = fastapi.Query(None)):
+    return {'c': c}
+
+
+@app.get('/cpfs/')
+async def cpfs(c: typing.List[str] = fastapi.Query(['456', '123'])):
+    return {'c': c}
+
+
+@app.get('/xelo/')
+async def cpfs(
+    c: typing.Optional[str] = fastapi.Query(
+        None,
+        title='cnjs',
+        description='cnjs numbers',
+        alias='item-query',
+        deprecated=True
+    ),
+):
+    return {'c': c}
 
 
 if __name__ == '__main__':
